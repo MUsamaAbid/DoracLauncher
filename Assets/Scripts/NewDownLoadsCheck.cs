@@ -30,11 +30,15 @@ public class NewDownLoadsCheck : MonoBehaviour
     private string gameZip;
     private string gameExe;
 
-
+    
     private void Start()
     {
         progressBar.fillAmount = 0;
         rootPath = Directory.GetCurrentDirectory();
+
+        
+        //File.Delete(gameZip);
+
         versionFile = Path.Combine(rootPath, "Version.txt");
         gameZip = Path.Combine(rootPath, "Build.zip");
         gameExe = Path.Combine(rootPath, "Build", gameName);
@@ -74,9 +78,9 @@ public class NewDownLoadsCheck : MonoBehaviour
         }
     }
 
-    private void FixedUpdate()
+    public void OpenFileBrowser()
     {
-        
+
     }
     
     
@@ -138,6 +142,14 @@ public class NewDownLoadsCheck : MonoBehaviour
             
             webClient.DownloadProgressChanged += (s, e) =>
             {
+                int i = 0;
+                if (Directory.Exists(rootPath + "\\NewGame-main\\Launcher") && i==0)
+                {
+                    i++;
+                    Directory.Delete("NewGame-main\\Launcher", true);
+                    UnityEngine.Debug.Log("File Exits" + rootPath + "\\NewGame-main");
+                }
+
                 double totalMB = (bytes_total / 1000000);
                 double recivedMB = (e.BytesReceived / 1000000);
                 mainProgressBar.SetActive(true);
@@ -165,7 +177,6 @@ public class NewDownLoadsCheck : MonoBehaviour
     {
         try
         {
-
             string onlineVersion = ((Version)e.UserState).ToString();
             ZipFile.ExtractToDirectory(gameZip, rootPath);
             File.Delete(gameZip);
@@ -174,6 +185,7 @@ public class NewDownLoadsCheck : MonoBehaviour
 
             versionText.text = onlineVersion;
             Status = LauncherStatus.ready;
+            mainProgressBar.SetActive(false);
         }
         catch (Exception ex)
         {
