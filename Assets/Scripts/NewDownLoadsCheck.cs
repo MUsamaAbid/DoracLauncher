@@ -8,7 +8,8 @@ using System.IO.Compression;
 using System.Net;
 using UnityEngine;
 using UnityEngine.UI;
-
+using AnotherFileBrowser.Windows;
+using System.Windows.Forms;
 
 public class NewDownLoadsCheck : MonoBehaviour
 {
@@ -34,15 +35,26 @@ public class NewDownLoadsCheck : MonoBehaviour
     private void Start()
     {
         progressBar.fillAmount = 0;
-        rootPath = Directory.GetCurrentDirectory();
-
-        
+        playBtn.SetActive(false);
+        if (PlayerPrefs.GetString("StoreFolder", null) == "")
+        {
+            rootPath = Directory.GetCurrentDirectory();
+            UnityEngine.Debug.Log("if rootPah: "+ rootPath);
+        }
+        else
+        {
+            rootPath = PlayerPrefs.GetString("StoreFolder");
+            UnityEngine.Debug.Log("else rootPah: " + rootPath);
+        }
         //File.Delete(gameZip);
 
         versionFile = Path.Combine(rootPath, "Version.txt");
         gameZip = Path.Combine(rootPath, "Build.zip");
         gameExe = Path.Combine(rootPath, "Build", gameName);
         mainProgressBar.SetActive(false);
+
+        
+
         CheckForUpdates();
     }
 
@@ -80,6 +92,33 @@ public class NewDownLoadsCheck : MonoBehaviour
 
     public void OpenFileBrowser()
     {
+
+        FolderBrowserDialog dlg = new FolderBrowserDialog();
+        dlg.SelectedPath = Directory.GetCurrentDirectory()+"\\";
+        
+        if (dlg.ShowDialog() == DialogResult.OK)
+        {
+            UnityEngine.Debug.Log("ok");
+            rootPath = dlg.SelectedPath;
+            PlayerPrefs.SetString("StoreFolder", rootPath);
+            rootPath = PlayerPrefs.GetString("StoreFolder");
+            //UnityEngine.Debug.Log();
+        }else
+        {
+            UnityEngine.Debug.Log("cancel");
+            if (PlayerPrefs.GetString("StoreFolder", null) == "")
+            {
+                rootPath = Directory.GetCurrentDirectory();
+                UnityEngine.Debug.Log("if rootPah: " + rootPath);
+            }
+            else
+            {
+                rootPath = PlayerPrefs.GetString("StoreFolder");
+                UnityEngine.Debug.Log("else rootPah: " + rootPath);
+            }
+        }
+        
+        
 
     }
     
