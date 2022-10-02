@@ -31,7 +31,6 @@ public class NewDownLoadsCheck : MonoBehaviour
     private string gameZip;
     private string gameExe;
 
-    
     private void Start()
     {
         progressBar.fillAmount = 0;
@@ -90,35 +89,40 @@ public class NewDownLoadsCheck : MonoBehaviour
         }
     }
 
+    public object ShowDiaog { get; private set; }
+
     public void OpenFileBrowser()
     {
+        OpenFileDialog dlg = new OpenFileDialog();
+        
+        dlg.InitialDirectory = rootPath;
+        dlg.ValidateNames = false;
+        dlg.CheckFileExists = false;
+        
+        dlg.FileName = "Folder Selection.";
+        
 
-        FolderBrowserDialog dlg = new FolderBrowserDialog();
-        dlg.SelectedPath = Directory.GetCurrentDirectory()+"\\";
-        
-        if (dlg.ShowDialog() == DialogResult.OK)
-        {
-            UnityEngine.Debug.Log("ok");
-            rootPath = dlg.SelectedPath;
-            PlayerPrefs.SetString("StoreFolder", rootPath);
-            rootPath = PlayerPrefs.GetString("StoreFolder");
-            //UnityEngine.Debug.Log();
-        }else
-        {
-            UnityEngine.Debug.Log("cancel");
-            if (PlayerPrefs.GetString("StoreFolder", null) == "")
-            {
-                rootPath = Directory.GetCurrentDirectory();
-                UnityEngine.Debug.Log("if rootPah: " + rootPath);
-            }
-            else
-            {
-                rootPath = PlayerPrefs.GetString("StoreFolder");
-                UnityEngine.Debug.Log("else rootPah: " + rootPath);
-            }
-        }
-        
-        
+         if (dlg.ShowDialog() == DialogResult.OK)
+         {
+             UnityEngine.Debug.Log("ok");
+             //rootPath = dlg.SelectedPath;
+             PlayerPrefs.SetString("StoreFolder", rootPath);
+             rootPath = PlayerPrefs.GetString("StoreFolder");
+             //UnityEngine.Debug.Log();
+         }else
+         {
+             UnityEngine.Debug.Log("cancel");
+             if (PlayerPrefs.GetString("StoreFolder", null) == "")
+             {
+                 rootPath = Directory.GetCurrentDirectory();
+                 UnityEngine.Debug.Log("if rootPah: " + rootPath);
+             }
+             else
+             {
+                 rootPath = PlayerPrefs.GetString("StoreFolder");
+                 UnityEngine.Debug.Log("else rootPah: " + rootPath);
+             }
+         }
 
     }
     
@@ -309,3 +313,4 @@ struct Version
         return $"{major}.{minor}.{subMinor}";
     }
 }
+
