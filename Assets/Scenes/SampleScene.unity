@@ -326,6 +326,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   versionText: {fileID: 919432841}
   browserBtn: {fileID: 1405851246}
+  restartTxt: {fileID: 725940077}
   playBtn: {fileID: 2002673986}
   mainProgressBar: {fileID: 1383939878}
   progressBar: {fileID: 1489794811}
