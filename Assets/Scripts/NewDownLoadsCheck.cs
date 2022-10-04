@@ -10,11 +10,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using AnotherFileBrowser.Windows;
 using System.Windows.Forms;
+using UnityEngine.SceneManagement;
 
 public class NewDownLoadsCheck : MonoBehaviour
 {
     [Header("Objects")]
     public Text versionText;
+    public GameObject browserBtn;
+    public GameObject restartTxt;
     public GameObject playBtn;
     public GameObject mainProgressBar;
     public Image progressBar;
@@ -34,7 +37,9 @@ public class NewDownLoadsCheck : MonoBehaviour
     private void Start()
     {
         progressBar.fillAmount = 0;
+        browserBtn.SetActive(false);
         playBtn.SetActive(false);
+        restartTxt.SetActive(false);
         if (PlayerPrefs.GetString("StoreFolder", null) == "")
         {
             rootPath = Directory.GetCurrentDirectory();
@@ -52,9 +57,16 @@ public class NewDownLoadsCheck : MonoBehaviour
         gameExe = Path.Combine(rootPath, "Build", gameName);
         mainProgressBar.SetActive(false);
 
-        
+        if (!Directory.Exists(rootPath + "\\NewGame-main\\Launcher") && PlayerPrefs.GetInt("IsFirst",0)==0)
+        {
+            browserBtn.SetActive(true);
+        }
 
-        CheckForUpdates();
+        if(PlayerPrefs.GetInt("IsFirst")==1 || (Directory.Exists(rootPath + "\\NewGame-main\\Launcher") && PlayerPrefs.GetInt("IsFirst", 0) == 0))
+        {
+            CheckForUpdates();
+        }
+        
     }
 
     
@@ -100,28 +112,35 @@ public class NewDownLoadsCheck : MonoBehaviour
         dlg.CheckFileExists = false;
         
         dlg.FileName = "Folder Selection.";
-        
 
+        PlayerPrefs.SetInt("IsFirst", 1);
          if (dlg.ShowDialog() == DialogResult.OK)
          {
              UnityEngine.Debug.Log("ok");
              //rootPath = dlg.SelectedPath;
              PlayerPrefs.SetString("StoreFolder", rootPath);
              rootPath = PlayerPrefs.GetString("StoreFolder");
-             //UnityEngine.Debug.Log();
-         }else
+            PlayerPrefs.SetInt("IsFirst", 1);
+             UnityEngine.Debug.Log(rootPath);
+            browserBtn.SetActive(false);
+            restartTxt.SetActive(true);
+
+        }
+        else
          {
              UnityEngine.Debug.Log("cancel");
              if (PlayerPrefs.GetString("StoreFolder", null) == "")
              {
                  rootPath = Directory.GetCurrentDirectory();
                  UnityEngine.Debug.Log("if rootPah: " + rootPath);
-             }
+                PlayerPrefs.SetInt("IsFirst", 1);
+            }
              else
              {
                  rootPath = PlayerPrefs.GetString("StoreFolder");
                  UnityEngine.Debug.Log("else rootPah: " + rootPath);
-             }
+                PlayerPrefs.SetInt("IsFirst", 1);
+            }
          }
 
     }
