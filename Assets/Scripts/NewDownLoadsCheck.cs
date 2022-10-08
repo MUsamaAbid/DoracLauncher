@@ -17,7 +17,7 @@ public class NewDownLoadsCheck : MonoBehaviour
     [Header("Objects")]
     public Text versionText;
     public GameObject browserBtn;
-    public GameObject restartTxt;
+    public Text restartTxt;
     public GameObject playBtn;
     public GameObject mainProgressBar;
     public Image progressBar;
@@ -39,7 +39,7 @@ public class NewDownLoadsCheck : MonoBehaviour
         progressBar.fillAmount = 0;
         browserBtn.SetActive(false);
         playBtn.SetActive(false);
-        restartTxt.SetActive(false);
+        restartTxt.gameObject.SetActive(false);
         if (PlayerPrefs.GetString("StoreFolder", null) == "")
         {
             rootPath = Directory.GetCurrentDirectory();
@@ -81,19 +81,28 @@ public class NewDownLoadsCheck : MonoBehaviour
             switch (_status)
             {
                 case LauncherStatus.ready:
+                    playBtn.SetActive(true);
+                    restartTxt.gameObject.SetActive(false);
                     DownloadingStatus.text = "Play";
 
                     break;
                 case LauncherStatus.failed:
                     DownloadingStatus.text = "Update Failed - Retry";
+                    restartTxt.gameObject.SetActive(true);
+                    restartTxt.text = "Update Failed - Retry";
                     break;
                 case LauncherStatus.downloadingGame:
+                    playBtn.SetActive(false);
                     DownloadingStatus.text = "Downloading Game";
+                    restartTxt.gameObject.SetActive(true);
+                    restartTxt.text = "Downloading Game";
 
                     break;
                 case LauncherStatus.downloadingUpdate:
+                    playBtn.SetActive(false);
                     DownloadingStatus.text = "Downloading Update";
-
+                    restartTxt.gameObject.SetActive(true);
+                    restartTxt.text = "Downloading Update";
                     break;
                 default:
                     break;
@@ -123,8 +132,9 @@ public class NewDownLoadsCheck : MonoBehaviour
             PlayerPrefs.SetInt("IsFirst", 1);
              UnityEngine.Debug.Log(rootPath);
             browserBtn.SetActive(false);
-            restartTxt.SetActive(true);
-
+            
+            restartTxt.gameObject.SetActive(true);
+            restartTxt.text = "Restart Required";
         }
         else
          {

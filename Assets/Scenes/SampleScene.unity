@@ -326,7 +326,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   versionText: {fileID: 919432841}
   browserBtn: {fileID: 1405851246}
-  restartTxt: {fileID: 725940077}
+  restartTxt: {fileID: 725940079}
   playBtn: {fileID: 2002673986}
   mainProgressBar: {fileID: 1383939878}
   progressBar: {fileID: 1489794811}
@@ -589,7 +589,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &657517985
 RectTransform:
   m_ObjectHideFlags: 0
@@ -772,8 +772,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 263.663, y: 77.935}
+  m_AnchoredPosition: {x: -0.0000009536743, y: 0}
+  m_SizeDelta: {x: 597.191, y: 77.935}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &725940079
 MonoBehaviour:
