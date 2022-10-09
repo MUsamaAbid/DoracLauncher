@@ -26,7 +26,7 @@ public class NewDownLoadsCheck : MonoBehaviour
     public Text DownloadingStatus;
 
     [Header("For Checking Updates")]
-    string gameName = "Person.exe";
+    string gameName = "\\NewGame-main\\notepad++.exe";
     string versionLink = "https://drive.google.com/uc?export=download&id=1WHxJEZPBpdjLKimT3PiIvRl2FjD7MlYo";
     string buildLink = "https://github.com/Shais24/NewGame/archive/refs/heads/main.zip";
     private string rootPath;
@@ -43,6 +43,7 @@ public class NewDownLoadsCheck : MonoBehaviour
         if (PlayerPrefs.GetString("StoreFolder", null) == "")
         {
             rootPath = Directory.GetCurrentDirectory();
+
             UnityEngine.Debug.Log("if rootPah: "+ rootPath);
         }
         else
@@ -57,12 +58,12 @@ public class NewDownLoadsCheck : MonoBehaviour
         gameExe = Path.Combine(rootPath, "Build", gameName);
         mainProgressBar.SetActive(false);
 
-        if (!Directory.Exists(rootPath + "\\NewGame-main\\Launcher") && PlayerPrefs.GetInt("IsFirst",0)==0)
+        if (!Directory.Exists(rootPath + "\\NewGame-main\\") && PlayerPrefs.GetInt("IsFirst",0)==0)
         {
             browserBtn.SetActive(true);
         }
 
-        if(PlayerPrefs.GetInt("IsFirst")==1 || (Directory.Exists(rootPath + "\\NewGame-main\\Launcher") && PlayerPrefs.GetInt("IsFirst", 0) == 0))
+        if(PlayerPrefs.GetInt("IsFirst")==1 || (Directory.Exists(rootPath + "\\NewGame-main") && PlayerPrefs.GetInt("IsFirst", 0) == 0))
         {
             CheckForUpdates();
         }
@@ -90,6 +91,7 @@ public class NewDownLoadsCheck : MonoBehaviour
                     DownloadingStatus.text = "Update Failed - Retry";
                     restartTxt.gameObject.SetActive(true);
                     restartTxt.text = "Update Failed - Retry";
+                    playBtn.SetActive(true);
                     break;
                 case LauncherStatus.downloadingGame:
                     playBtn.SetActive(false);
@@ -114,9 +116,10 @@ public class NewDownLoadsCheck : MonoBehaviour
 
     public void OpenFileBrowser()
     {
-        OpenFileDialog dlg = new OpenFileDialog();
-        
-        dlg.InitialDirectory = rootPath;
+        FolderBrowserDialog dlg = new FolderBrowserDialog();
+        //OpenFileDialog dlg = new OpenFileDialog();
+
+        /*dlg.InitialDirectory = rootPath;
         dlg.ValidateNames = false;
         dlg.CheckFileExists = false;
         
@@ -127,10 +130,10 @@ public class NewDownLoadsCheck : MonoBehaviour
          {
              UnityEngine.Debug.Log("ok");
              //rootPath = dlg.SelectedPath;
-             PlayerPrefs.SetString("StoreFolder", rootPath);
+             PlayerPrefs.SetString("StoreFolder", dlg.InitialDirectory);
              rootPath = PlayerPrefs.GetString("StoreFolder");
             PlayerPrefs.SetInt("IsFirst", 1);
-             UnityEngine.Debug.Log(rootPath);
+             UnityEngine.Debug.Log(dlg.InitialDirectory);
             browserBtn.SetActive(false);
             
             restartTxt.gameObject.SetActive(true);
@@ -151,8 +154,40 @@ public class NewDownLoadsCheck : MonoBehaviour
                  UnityEngine.Debug.Log("else rootPah: " + rootPath);
                 PlayerPrefs.SetInt("IsFirst", 1);
             }
-         }
+         }*/
 
+        dlg.SelectedPath = rootPath;
+
+        UnityEngine.Debug.Log("RootFoolder: " + Environment.SpecialFolder.ApplicationData);
+        if (dlg.ShowDialog() == DialogResult.OK)
+        {
+            UnityEngine.Debug.Log("ok");
+            //rootPath = dlg.SelectedPath;
+            PlayerPrefs.SetString("StoreFolder", dlg.SelectedPath);
+            rootPath = PlayerPrefs.GetString("StoreFolder");
+            PlayerPrefs.SetInt("IsFirst", 1);
+            UnityEngine.Debug.Log(dlg.SelectedPath);
+            browserBtn.SetActive(false);
+
+            restartTxt.gameObject.SetActive(true);
+            restartTxt.text = "Restart Required";
+        }
+        else
+        {
+            UnityEngine.Debug.Log("cancel");
+            if (PlayerPrefs.GetString("StoreFolder", null) == "")
+            {
+                rootPath = Directory.GetCurrentDirectory();
+                UnityEngine.Debug.Log("if rootPah: " + rootPath);
+                PlayerPrefs.SetInt("IsFirst", 1);
+            }
+            else
+            {
+                rootPath = PlayerPrefs.GetString("StoreFolder");
+                UnityEngine.Debug.Log("else rootPah: " + rootPath);
+                PlayerPrefs.SetInt("IsFirst", 1);
+            }
+        }
     }
     
     
@@ -215,10 +250,10 @@ public class NewDownLoadsCheck : MonoBehaviour
             webClient.DownloadProgressChanged += (s, e) =>
             {
                 int i = 0;
-                if (Directory.Exists(rootPath + "\\NewGame-main\\Launcher") && i==0)
+                if (Directory.Exists(rootPath + "\\NewGame-main") && i==0)
                 {
                     i++;
-                    Directory.Delete("NewGame-main\\Launcher", true);
+                    Directory.Delete(rootPath + "\\NewGame-main", true);
                     UnityEngine.Debug.Log("File Exits" + rootPath + "\\NewGame-main");
                 }
 
@@ -233,7 +268,6 @@ public class NewDownLoadsCheck : MonoBehaviour
                 downloadingMB.text = recivedMB + " MB";
                 totalDownloadSize.text = totalMB + " MB";
                 progressBar.fillAmount = (float)(recivedMB/totalMB);
-
             };
         }
         catch (Exception ex)
@@ -254,7 +288,7 @@ public class NewDownLoadsCheck : MonoBehaviour
             File.Delete(gameZip);
 
             File.WriteAllText(versionFile, onlineVersion);
-
+            UnityEngine.Debug.Log("Dowload Completed..");
             versionText.text = onlineVersion;
             Status = LauncherStatus.ready;
             mainProgressBar.SetActive(false);
@@ -269,10 +303,13 @@ public class NewDownLoadsCheck : MonoBehaviour
 
     public void PlayButton_Click()
     {
-        if (File.Exists(gameExe) && Status == LauncherStatus.ready)
+        gameExe = Path.Combine(rootPath, "Build", gameName);
+        UnityEngine.Debug.Log("Game " + gameExe);
+        if (File.Exists(rootPath+"\\"+gameExe) && Status == LauncherStatus.ready)
         {
-            ProcessStartInfo startInfo = new ProcessStartInfo(gameExe);
+            ProcessStartInfo startInfo = new ProcessStartInfo(rootPath + "\\" + gameExe);
             startInfo.WorkingDirectory = Path.Combine(rootPath, "Build");
+            UnityEngine.Debug.Log("Play Btn: "+ rootPath);
             Process.Start(startInfo);
 
             
